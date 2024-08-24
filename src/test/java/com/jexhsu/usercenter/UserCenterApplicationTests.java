@@ -1,10 +1,10 @@
-package com.jexhsu.user_center_backend;
+package com.jexhsu.usercenter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserCenterBackendApplicationTests {
+class UserCenterApplicationTests {
 
 	@Test
 	void contextLoads() {
