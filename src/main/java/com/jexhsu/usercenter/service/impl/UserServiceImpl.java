@@ -17,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import static com.jexhsu.usercenter.constant.UserConstant.SALT;
+import static com.jexhsu.usercenter.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * @author xuji
  * @description 针对表【user(用户)】的数据库操作Service实现
@@ -30,8 +33,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
-    public static final String SALT = "jexhsu";
-    public static final String USER_LOGIN_STATE = "userLoginState";
     public static final int MIN_PASSWORD_LENGTH = 8;
     public static final int MIN_USERNAME_LENGTH = 4;
     public static final int MAX_PASSWORD_LENGTH = 16;
@@ -146,11 +147,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setUserAccount(originUser.getUserAccount());
         safetyUser.setAvatarUrl(originUser.getAvatarUrl());
         safetyUser.setGender(originUser.getGender());
-
-        // 脱敏处理
         safetyUser.setPhone(originUser.getPhone());
         safetyUser.setEmail(originUser.getEmail());
-
         safetyUser.setUserRole(originUser.getUserRole());
         safetyUser.setUserStatus(originUser.getUserStatus());
         safetyUser.setCreateTime(originUser.getCreateTime());

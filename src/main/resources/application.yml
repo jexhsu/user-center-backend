@@ -5,6 +5,8 @@ spring:
     url: jdbc:mysql://localhost:3306/user_center
     username: root
     password: xujiwsdfr
+  session:
+    timeout: 24h
 server:
   port: 8001
 mybatis-plus:
