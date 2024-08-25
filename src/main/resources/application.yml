@@ -2,8 +2,11 @@ spring:
   application:
     name: user-center-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/user-center
+    url: jdbc:mysql://localhost:3306/user_center
     username: root
     password: xujiwsdfr
 server:
   port: 8001
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
