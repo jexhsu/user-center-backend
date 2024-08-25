@@ -4,11 +4,9 @@ import com.jexhsu.usercenter.mapper.UserMapper;
 import com.jexhsu.usercenter.model.domain.User;
 import com.jexhsu.usercenter.service.impl.UserServiceImpl;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -16,7 +14,6 @@ import javax.annotation.Resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -37,7 +34,8 @@ public class UserServiceTest {
 
         user.setUsername("jexhsu");
         user.setUserAccount("jexhsu");
-        user.setAvatarUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9pisrl5v6LFRE9Xk2qA_FvYDyLh12Z9vivg&s");
+        user.setAvatarUrl(
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9pisrl5v6LFRE9Xk2qA_FvYDyLh12Z9vivg&s");
         user.setGender(1);
         user.setUserPassword("xujiwsdfr");
         user.setPhone("1779148xxxx");
@@ -63,6 +61,7 @@ public class UserServiceTest {
         String checkPassword = "password123";
         long result = userService.userRegister(userAccount, userPassword, checkPassword);
         assertTrue(result > 0, "The result should be greater than zero");
+        // TODO: delete testUser
     }
 
     /**
