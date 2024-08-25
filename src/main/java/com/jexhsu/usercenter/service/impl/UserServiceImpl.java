@@ -10,7 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -21,13 +23,17 @@ import org.springframework.util.DigestUtils;
  * @createDate 2024-08-25 11:57:15
  */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
 
     @Resource
     private UserMapper userMapper;
 
+    public static final String SALT = "jexhsu";
+    public static final String USER_LOGIN_STATE = "userLoginState";
     public static final int MIN_PASSWORD_LENGTH = 8;
+    public static final int MIN_USERNAME_LENGTH = 4;
     public static final int MAX_PASSWORD_LENGTH = 16;
 
     /**
@@ -45,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return -1;
         }
         // 账号长度不小于4位
-        if (userAccount.length() < 4) {
+        if (userAccount.length() < MIN_USERNAME_LENGTH) {
             return -1;
         }
         // 密码不小于8位
@@ -74,7 +80,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (count > 0) {
             return -1;
         }
-        final String SALT = "jexhsu";
         // 对密码进行加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 将数据插入数据库
@@ -88,4 +93,67 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user.getId();
     }
 
+    @Override
+    public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+        // 非空校验
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            return null;
+        }
+        // 账号长度不小于4位
+        if (userAccount.length() < 4) {
+            return null;
+        }
+        // 密码不小于8位
+        if (userPassword.length() < MIN_PASSWORD_LENGTH) {
+            return null;
+        }
+        // 密码不大于16位
+        if (userPassword.length() > MAX_PASSWORD_LENGTH) {
+            return null;
+        }
+        // 账户不包含特殊字符
+        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        // 使用正则表达式进行校验
+        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
+        if (matcher.find()) {
+            return null;
+        }
+        // 对密码进行加密
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        // 查询用户是否存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("userPassword", encryptPassword);
+        User user = userMapper.selectOne(queryWrapper);
+        if (user == null) {
+            log.info("user login failed, userAccount cannot match userPassword");
+        }
+        // 用户信息脱敏
+        User safetyUser = getSafetyUser(user);
+        // 用户登录成功,将登录态设置到Session当中
+        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
+        return safetyUser;
+    }
+
+    @Override
+    public User getSafetyUser(User originUser) {
+        if (originUser == null) {
+            return null;
+        }
+        User safetyUser = new User();
+        safetyUser.setId(originUser.getId());
+        safetyUser.setUsername(originUser.getUsername());
+        safetyUser.setUserAccount(originUser.getUserAccount());
+        safetyUser.setAvatarUrl(originUser.getAvatarUrl());
+        safetyUser.setGender(originUser.getGender());
+
+        // 脱敏处理
+        safetyUser.setPhone(originUser.getPhone());
+        safetyUser.setEmail(originUser.getEmail());
+
+        safetyUser.setUserRole(originUser.getUserRole());
+        safetyUser.setUserStatus(originUser.getUserStatus());
+        safetyUser.setCreateTime(originUser.getCreateTime());
+        return safetyUser;
+    }
 }

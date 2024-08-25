@@ -1,6 +1,9 @@
 package com.jexhsu.usercenter.service;
 
 import com.jexhsu.usercenter.model.domain.User;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,4 +14,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserService extends IService<User> {
 
     long userRegister(String userAccount, String userPassword, String checkPassword);
+
+    User userLogin(String userAccount, String userPassword, HttpServletRequest request);
+
+    User getSafetyUser(User originUser);
 }
