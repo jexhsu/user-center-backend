@@ -21,6 +21,3 @@ create table if not exists user
     planetCode   varchar(512)                       null comment '星球编号'
 )
     comment '用户';
-
-INSERT INTO user_center.user (username, userAccount, avatarUrl, gender, userPassword, phone, email, userStatus, createTime, updateTime, isDelete, userRole, planetCode)
-VALUES ('jexhsu', 'jexhsu', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9pisrl5v6LFRE9Xk2qA_FvYDyLh12Z9vivg&s', 1, 'b0dd3697a192885d7c055db46155b26a', '1779148xxxx', 'jexhsu@gmail.com', 0, '2024-08-25 14:14:22', '2024-08-25 14:39:37', 0, 1, '1');
