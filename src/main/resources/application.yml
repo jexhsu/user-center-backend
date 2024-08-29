@@ -6,9 +6,11 @@ spring:
     username: root
     password: xujiwsdfr
   session:
-    timeout: 24h
+    timeout: 86400
 server:
-  port: 8001
+  port: 8080
+  servlet:
+    context-path: /api
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
