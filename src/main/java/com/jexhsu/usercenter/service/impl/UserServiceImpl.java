@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jexhsu.usercenter.model.domain.User;
 import com.jexhsu.usercenter.service.UserService;
+import com.jexhsu.usercenter.common.ErrorCode;
+import com.jexhsu.usercenter.exception.BusinessException;
 import com.jexhsu.usercenter.mapper.UserMapper;
 
 import java.util.regex.Matcher;
@@ -49,37 +51,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         // 非空校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         // 账号长度不小于4位
         if (userAccount.length() < MIN_USERNAME_LENGTH) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号长度小于4位");
         }
         // 密码不小于8位
         if (userPassword.length() < MIN_PASSWORD_LENGTH || checkPassword.length() < MIN_PASSWORD_LENGTH) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码小于8位");
         }
         // 密码不大于16位
         if (userPassword.length() > MAX_PASSWORD_LENGTH || checkPassword.length() > MAX_PASSWORD_LENGTH) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户编号大于16位");
         }
         // 账户不包含特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         // 使用正则表达式进行校验
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号含有特殊字符");
         }
         // 密码和校验密码是否相同
         if (!userPassword.equals(checkPassword)) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
         }
         // 账户名称不能重复，查询数据库当中是否存在相同名称用户
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userAccount", userAccount);
         long count = userMapper.selectCount(queryWrapper);
         if (count > 0) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号名称已存在");
         }
         // 对密码进行加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -89,7 +91,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setUserPassword(encryptPassword);
         boolean saveResult = this.save(user);
         if (!saveResult) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "保存数据库失败");
         }
         return user.getId();
     }
@@ -98,26 +100,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 非空校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号密码不能为空");
         }
         // 账号长度不小于4位
         if (userAccount.length() < 4) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号长度小于8位");
         }
         // 密码不小于8位
         if (userPassword.length() < MIN_PASSWORD_LENGTH) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码小于8位");
         }
         // 密码不大于16位
         if (userPassword.length() > MAX_PASSWORD_LENGTH) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户编号大于16位");
         }
         // 账户不包含特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         // 使用正则表达式进行校验
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号包含特殊字符");
         }
         // 对密码进行加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -128,12 +130,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不存在或密码不正确");
         }
         // 用户信息脱敏
         User safetyUser = getSafetyUser(user);
         // 用户登录成功,将登录态设置到Session当中
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
         return safetyUser;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "未登录");
+        }
+        Long id = currentUser.getId();
+        User user = this.getById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "未登录");
+        }
+        return this.getSafetyUser(user);
+    }
+
+    @Override
+    public int userLogout(HttpServletRequest request) {
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return 1;
     }
 
     @Override
