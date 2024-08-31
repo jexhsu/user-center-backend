@@ -1,5 +1,6 @@
 package com.jexhsu.usercenter.model.domain;
 
+import ch.qos.logback.classic.spi.EventArgUtil;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
@@ -12,7 +13,11 @@ import lombok.Data;
  *
  */
 @TableName(value = "Users_Prod")
+<<<<<<< HEAD
 // @TableName(value = "Users_Dev")
+=======
+//@TableName(value = "Users_Dev")
+>>>>>>> 0adfcdec06d7d83ba872d15ac4c6ae4f8283877e
 @Data
 public class User implements Serializable {
     /**
