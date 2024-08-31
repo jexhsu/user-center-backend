@@ -2,6 +2,7 @@ package com.jexhsu.usercenter.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jexhsu.usercenter.common.BaseResponse;
@@ -26,6 +27,7 @@ public class GlobalExceptionHandler {
 
     @SuppressWarnings("rawtypes")
     @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
     public BaseResponse runtimeExceptionHandler(BusinessException e) {
         // 日志集中处理
         log.error("runtimeException:", e);

@@ -4,13 +4,15 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.Data;
 
 /**
  * 用户
- * @TableName user
+ *
  */
-@TableName(value ="user")
+@TableName(value = "Users_Prod")
+// @TableName(value = "Users_Dev")
 @Data
 public class User implements Serializable {
     /**
@@ -22,17 +24,17 @@ public class User implements Serializable {
     /**
      * 用户昵称
      */
-    private String username;
+    private String user_name;
 
     /**
      * 账号
      */
-    private String userAccount;
+    private String user_account;
 
     /**
      * 用户头像
      */
-    private String avatarUrl;
+    private String avatar_url;
 
     /**
      * 性别 0 - 女 1 - 男
@@ -42,7 +44,7 @@ public class User implements Serializable {
     /**
      * 密码
      */
-    private String userPassword;
+    private String user_password;
 
     /**
      * 电话
@@ -57,33 +59,33 @@ public class User implements Serializable {
     /**
      * 状态 0 - 正常
      */
-    private Integer userStatus;
+    private Integer user_status;
 
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date create_time;
 
     /**
      *
      */
-    private Date updateTime;
+    private Date update_time;
 
     /**
      * 是否删除
      */
     @TableLogic
-    private Integer isDelete;
+    private Integer is_delete;
 
     /**
      * 用户角色 0 - 普通用户 1 - 管理员
      */
-    private Integer userRole;
+    private Integer user_role;
 
     /**
      * 星球编号
      */
-    private String planetCode;
+    private String planet_code;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

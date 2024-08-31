@@ -27,7 +27,7 @@ import static com.jexhsu.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 @RestController()
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:8000", allowCredentials = "true")
+@CrossOrigin(origins = "https://user-center-backend-nu.vercel.app", allowCredentials = "true")
 public class UserController {
     @Resource
     UserService userService;
@@ -36,11 +36,10 @@ public class UserController {
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-
         }
-        String userAccount = userRegisterRequest.getUserAccount();
-        String userPassword = userRegisterRequest.getUserPassword();
-        String checkPassword = userRegisterRequest.getCheckPassword();
+        String userAccount = userRegisterRequest.getUser_account();
+        String userPassword = userRegisterRequest.getUser_password();
+        String checkPassword = userRegisterRequest.getCheck_password();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -53,8 +52,8 @@ public class UserController {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
-        String userAccount = userLoginRequest.getUserAccount();
-        String userPassword = userLoginRequest.getUserPassword();
+        String userAccount = userLoginRequest.getUser_account();
+        String userPassword = userLoginRequest.getUser_password();
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -78,7 +77,7 @@ public class UserController {
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNoneBlank(username)) {
-            queryWrapper.like("username", username);
+            queryWrapper.like("user_name", username);
         }
         List<User> userList = userService.list(queryWrapper);
         List<User> safetyUserList = new ArrayList<>();
@@ -124,7 +123,7 @@ public class UserController {
     }
 
     private boolean isAdmin(HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        return user != null && user.getUserRole() == ADMIN_USER;
+        User users = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return users != null && users.getUser_role() == ADMIN_USER;
     }
 }
