@@ -27,7 +27,7 @@ import static com.jexhsu.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 @RestController()
 @RequestMapping("/user")
-@CrossOrigin(origins = "https://user-center-backend-nu.vercel.app", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:8000", allowCredentials = "true")
 public class UserController {
     @Resource
     UserService userService;
