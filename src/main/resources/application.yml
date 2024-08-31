@@ -2,9 +2,12 @@ spring:
   application:
     name: user-center-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/user_center
-    username: root
-    password: xujiwsdfr
+    url: jdbc:postgresql://ep-dark-cherry-a4c74yoi-pooler.us-east-1.aws.neon.tech/user_center?sslmode=require
+    username: default
+    password: 1bKszOt3FjlC
+    driver-class-name: org.postgresql.Driver
+table:
+  name: Users_Prod
   session:
     timeout: 86400
 server:

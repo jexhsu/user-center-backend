@@ -6,6 +6,6 @@ import java.io.Serializable;
 
 @Data
 public class UserLoginRequest implements Serializable {
-    public String userAccount;
-    public String userPassword;
+    public String user_account;
+    public String user_password;
 }

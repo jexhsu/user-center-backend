@@ -8,8 +8,8 @@ import lombok.Data;
 public class UserUpdateRequest implements Serializable {
     private Long id;
 
-    private Integer userStatus;
+    private Integer user_status;
 
-    private Integer userRole;
+    private Integer user_role;
 
 }
